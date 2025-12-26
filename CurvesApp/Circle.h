@@ -4,6 +4,7 @@
 
 class Circle : public ICurve
 {
+public:
     Circle(uint64_t id, const std::string& name, Point3D center, double radius);
 
     Point3D getPoint(double t) const override;

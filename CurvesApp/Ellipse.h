@@ -2,6 +2,7 @@
 #include "ICurve.h"
 class Ellipse : public ICurve
 {
+public:
     Ellipse(uint64_t id, const std::string& name, Point3D center, double radiusX, double radiusY);
 
     Point3D getPoint(double t) const override;

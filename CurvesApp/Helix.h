@@ -2,7 +2,7 @@
 #include "ICurve.h"
 class Helix : public ICurve
 {
-
+public:
     Helix(uint64_t id, const std::string& name, Point3D center, double radius, double step);
 
     Point3D getPoint(double t) const override;
