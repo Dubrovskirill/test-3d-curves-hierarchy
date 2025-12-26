@@ -1,45 +1,71 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include <iomanip>
+#include <algorithm>
+#include <numeric> 
+#include <memory>
+#include <cmath>
+
 #include "Parser.h"
 #include "Circle.h"
-#include "Ellipse.h"
-#include "Helix.h"
 
-int main() {
-    
-    std::string testPath = "data/curves_to_check.txt";
-    auto curves = Parser::parseFile(testPath);
-
-    std::cout << "=== PARSER DATA INTEGRITY TEST ===" << std::endl;
-    std::cout << std::fixed << std::setprecision(2);
-
-    if (curves.empty()) {
-        std::cout << "Failed to load curves or file is empty!" << std::endl;
+int main(int argc, char* argv[]) {
+  
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " <path_to_file>" << std::endl;
         return 1;
     }
 
-    for (const auto& curve : curves) {
-        std::cout << "------------------------------------------" << std::endl;
-        std::cout << "Type: " << std::left << std::setw(10) << curve->getName()
-            << " ID: " << curve->getId() << std::endl;
+    static const double PI = std::acos(-1.0);
+    const double t = PI / 4.0;
 
-     
+    auto allCurves = Parser::parseFile(argv[1]);
 
-        if (auto c = std::dynamic_pointer_cast<Circle>(curve)) {
-            std::cout << "[CIRCLE]  Radius: " << c->getRadius() << std::endl;
-        }
-        else if (auto e = std::dynamic_pointer_cast<Ellipse>(curve)) {
-            std::cout << "[ELLIPSE] RadiusX: " << e->getRadiusX()
-                << " RadiusY: " << e->getRadiusY() << std::endl;
-        }
-        else if (auto h = std::dynamic_pointer_cast<Helix>(curve)) {
-            std::cout << "[HELIX]   Radius: " << h->getRadius()
-                << " Step: " << h->getStep() << std::endl;
+    if (allCurves.empty()) {
+        std::cout << "No valid curves found." << std::endl;
+        return 0;
+    }
+
+    std::cout << std::fixed << std::setprecision(6);
+
+    std::cout << "Curves Data at t = PI/4 " << std::endl;
+    for (const auto& curve : allCurves) {
+        std::cout << "ID: " << std::setw(10) << curve->getId()
+            << " [" << std::left << std::setw(15) << curve->getName() << "]"
+            << "\n  Point: " << curve->getPoint(t)
+            << "\n  Deriv: " << curve->getDerivative(t) << "\n" << std::endl;
+    }
+
+    
+    std::vector<std::shared_ptr<Circle>> circles;
+    for (const auto& curve : allCurves) {
+        if (auto circlePtr = std::dynamic_pointer_cast<Circle>(curve)) {
+            circles.push_back(circlePtr);
         }
     }
-    std::cout << "------------------------------------------" << std::endl;
-    std::cout << "Total curves parsed: " << curves.size() << std::endl;
+
+ 
+    std::sort(circles.begin(), circles.end(),
+        [](const std::shared_ptr<Circle>& a, const std::shared_ptr<Circle>& b) {
+            return a->getRadius() < b->getRadius();
+        });
+
+    std::cout << "Sorted Circles (by radius) " << std::endl;
+    for (const auto& circle : circles) {
+        std::cout << "Radius: " << std::setw(10) << circle->getRadius()
+            << " | ID: " << circle->getId() << std::endl;
+    }
+
+   
+
+    double totalRadiusSum = std::accumulate(circles.begin(), circles.end(), 0.0,
+        [](double sum, const std::shared_ptr<Circle>& c) {
+            return sum + c->getRadius();
+        });
+
+    std::cout << "\nTotal Sum of Radius " << std::endl;
+    std::cout << "Sum: " << totalRadiusSum << std::endl;
 
     return 0;
 }
