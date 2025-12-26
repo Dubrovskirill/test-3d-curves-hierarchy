@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 
-namespace Geometry {
 	struct Point3D
 	{
 		double x = 0.0;
@@ -30,6 +29,6 @@ namespace Geometry {
 	inline std::ostream& operator<<(std::ostream& os, const Vector3D& v) {
 		return os << "[" << v.x << ", " << v.y << ", " << v.z << "]";
 	}
-}
+
 
 
