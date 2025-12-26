@@ -22,6 +22,14 @@ namespace Geometry {
 			:x(x), y(y), z(z) {
 		}
 	};
+
+	inline std::ostream& operator<<(std::ostream& os, const Point3D& p) {
+		return os << "(" << p.x << "; " << p.y << "; " << p.z << ")";
+	}
+
+	inline std::ostream& operator<<(std::ostream& os, const Vector3D& v) {
+		return os << "[" << v.x << ", " << v.y << ", " << v.z << "]";
+	}
 }
 
 
